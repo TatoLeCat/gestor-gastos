@@ -3,55 +3,86 @@
 <div class="datepicker">
 	<div class="datepicker-top">
 		<div class="month-selector">
-			<button class="arrow"><i class="pi pi-chevron-left"></i></button>
-			<span class="month-name">December 2020</span>
-			<button class="arrow"><i class="pi pi-chevron-right"></i></button>
+			<button class="arrow" @click="previusMonth()"><i class="pi pi-chevron-left"></i></button>
+			<span class="month-name">{{ curMonth }} {{ year }}</span>
+			<button class="arrow" @click="nextMonth()"><i class="pi pi-chevron-right"></i></button>
 		</div>
 	</div>
 	<div class="datepicker-calendar">
-		<span class="day">Lun</span>
-		<span class="day">Mar</span>
-		<span class="day">Mie</span>
-		<span class="day">Jue</span>
-		<span class="day">Vie</span>
-		<span class="day">Sab</span>
-		<span class="day">Dom</span>
-		<button class="date faded">30</button>
-		<button class="date">1</button>
-		<button class="date">2</button>
-		<button class="date">3</button>
-		<button class="date">4</button>
-		<button class="date">5</button>
-		<button class="date">6</button>
-		<button class="date">7</button>
-		<button class="date">8</button>
-		<button class="date current-day">9</button>
-		<button class="date">10</button>
-		<button class="date">11</button>
-		<button class="date">12</button>
-		<button class="date">13</button>
-		<button class="date">14</button>
-		<button class="date">15</button>
-		<button class="date">16</button>
-		<button class="date">17</button>
-		<button class="date">18</button>
-		<button class="date">19</button>
-		<button class="date">20</button>
-		<button class="date">21</button>
-		<button class="date">22</button>
-		<button class="date">23</button>
-		<button class="date">24</button>
-		<button class="date">25</button>
-		<button class="date">26</button>
-		<button class="date">27</button>
-		<button class="date">28</button>
-		<button class="date">29</button>
-		<button class="date">30</button>
-		<button class="date">31</button>
-		<button class="date faded">1</button>
-		<button class="date faded">2</button>
-		<button class="date faded">3</button>
+		<!-- HAY QUE AGREGAR ESTILOS PARA NO ROMPER TANTO EL CALENDARIO	-->
+		<span class="day" v-for="day in days" :key="day"> {{ day }}</span>
+		<div v-for="lastdays in lastMonthday" :key="lastdays">
+			<button class="date faded" disabled>{{ lastdays }}</button>
+			<!-- span>algo ira aqui</span-->
+		</div>
+		<div v-for="currentdays in currentMonthDay" :key="currentdays">
+			<button class="date" v-if="currentdays != currentday">{{ currentdays }}</button>
+			<button class="date today current-day" v-else>{{ currentdays }}</button>
+			<!-- span>algo ira aqui</span-->
+		</div>
+		<div v-for="nextdays in nextMonthday" :key="nextdays">
+			<button class="date faded" disabled>{{ nextdays }}</button>
+			<!-- span>algo ira aqui</span -->
+		</div>
 	</div>
 </div>
 </template>
 
+<script setup>
+let days = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+let date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth();
+let months = new Array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+let currentday = date.getDate();
+
+
+let curMonth = months[month];
+let dayone = new Date(year, month, 1).getDay();
+let lastdate = new Date(year, month + 1, 0).getDate();
+let dayend = new Date(year, month, lastdate).getDay();
+let monthlastdate = new Date(year, month, 0).getDate();
+let lastMonthday =[];
+let nextMonthday = 0;
+let currentMonthDay = [];
+
+
+	for (let i = dayone; i > 1; i--) {
+		lastMonthday.push(monthlastdate - i + 1);
+	}
+	for (let i = dayend; i < 7; i++) {
+		nextMonthday += 1;
+	}
+	for (let i = 1; i <= lastdate; i++) {
+		currentMonthDay.push(i);
+	}
+
+
+function previusMonth() {
+	month -= 1;
+	if (month < 0) {
+		month = 11;
+		year -= 1;
+		curMonth = months[month];
+	}
+	date = new Date(year, month, new Date().getDate());
+	year = date.getFullYear();
+	month = date.getMonth();
+	
+}
+
+
+
+function nextMonth() {
+	month += 1;
+	if (month > 11) {
+		month = 0;
+		year += 1;
+	}
+	curMonth = months[month];
+	date = new Date(year, month, new Date().getDate());
+	year = date.getFullYear();
+	month = date.getMonth();
+	
+}
+</script>
